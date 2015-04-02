@@ -15,13 +15,23 @@ package awslabs.lab31;
 import java.util.List;
 
 import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.CreateTopicRequest;
+import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.SubscribeRequest;
 import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
+import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
 import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 
 /**
  * Project: Lab3.1
  */
-public class StudentCode extends SolutionCode {
+public class StudentCode extends SolutionCode 
+{
 
 	/**
 	 * Create an SQS queue using the queue name provided and return the URL for the new queue. Hint: Use the
@@ -32,9 +42,14 @@ public class StudentCode extends SolutionCode {
 	 * @return The URL of the newly created queue.
 	 */
 	@Override
-	public String createQueue(AmazonSQSClient sqsClient, String queueName) {
+	public String createQueue(AmazonSQSClient sqsClient, String queueName) 
+	{
 		// TODO: Replace this call to the super class with your own method implementation.
-		return super.createQueue(sqsClient, queueName);
+		//return super.createQueue(sqsClient, queueName);
+		CreateQueueRequest req = new CreateQueueRequest(queueName);
+		String queueUrl = sqsClient.createQueue(req).getQueueUrl();		
+		return queueUrl;
+
 	}
 
 	/**
@@ -48,7 +63,11 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public String getQueueArn(AmazonSQSClient sqsClient, String queueUrl) {
 		// TODO: Replace this call to the super class with your own method implementation.
-		return super.getQueueArn(sqsClient, queueUrl);
+		//return super.getQueueArn(sqsClient, queueUrl);
+		GetQueueAttributesRequest req = new	GetQueueAttributesRequest().withAttributeNames("QueueArn").withQueueUrl(queueUrl);	
+		GetQueueAttributesResult res =	sqsClient.getQueueAttributes(req);
+		String arn = res.getAttributes().get("QueueArn");		
+       return arn;
 	}
 
 	/**
@@ -62,7 +81,11 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public String createTopic(AmazonSNSClient snsClient, String topicName) {
 		// TODO: Replace this call to the super class with your own method implementation.
-		return super.createTopic(snsClient, topicName);
+		//return super.createTopic(snsClient, topicName);
+		CreateTopicRequest req = new CreateTopicRequest().withName(topicName);
+		CreateTopicResult res = snsClient.createTopic(req);
+		String topicArn = res.getTopicArn();
+		return topicArn;
 	}
 
 	/**
@@ -76,7 +99,10 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public void createSubscription(AmazonSNSClient snsClient, String queueArn, String topicArn) {
 		// TODO: Replace this call to the super class with your own method implementation.
-		super.createSubscription(snsClient, queueArn, topicArn);
+		//super.createSubscription(snsClient, queueArn, topicArn);
+		SubscribeRequest req = new SubscribeRequest().withEndpoint(queueArn).withProtocol("sqs") .withTopicArn(topicArn);
+		snsClient.subscribe(req); 
+
 	}
 
 	/**
@@ -90,7 +116,10 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public void publishTopicMessage(AmazonSNSClient snsClient, String topicArn, String subject, String message) {
 		// TODO: Replace this call to the super class with your own method implementation.
-		super.publishTopicMessage(snsClient, topicArn, subject, message);
+		//super.publishTopicMessage(snsClient, topicArn, subject, message);
+		PublishRequest req = new PublishRequest().withSubject(subject).withMessage(message).withTopicArn(topicArn);
+		snsClient.publish(req);
+
 	}
 
 	/**
@@ -101,9 +130,11 @@ public class StudentCode extends SolutionCode {
 	 * @param messageText The body of the message to place in the queue.
 	 */
 	@Override
-	public void postToQueue(AmazonSQSClient sqsClient, String queueUrl, String messageText) {
+	public void postToQueue(AmazonSQSClient sqsClient, String queueUrl, String messageText) 
+	{
 		// TODO: Replace this call to the super class with your own method implementation.
-		super.postToQueue(sqsClient, queueUrl, messageText);
+		//super.postToQueue(sqsClient, queueUrl, messageText);
+		sqsClient.sendMessage(queueUrl, messageText);
 	}
 
 	/**
@@ -115,9 +146,13 @@ public class StudentCode extends SolutionCode {
 	 * @return A list of messages from the queue.
 	 */
 	@Override
-	public List<Message> readMessages(AmazonSQSClient sqsClient, String queueUrl) {
+	public List<Message> readMessages(AmazonSQSClient sqsClient, String queueUrl) 
+	{
 		// TODO: Replace this call to the super class with your own method implementation.
-		return super.readMessages(sqsClient, queueUrl);
+		//return super.readMessages(sqsClient, queueUrl);
+		ReceiveMessageRequest myreq = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withQueueUrl(queueUrl);
+		ReceiveMessageResult myres = sqsClient.receiveMessage(myreq);
+		return myres.getMessages();
 	}
 
 	/**
