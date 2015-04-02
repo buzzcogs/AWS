@@ -102,6 +102,10 @@ public class StudentCode extends SolutionCode {
 	//super.listObjects(s3Client, bucketName);    	  	
     	ListObjectsRequest myrequest =	new	ListObjectsRequest().withBucketName (bucketName);
     	ObjectListing objList =	s3Client.listObjects(myrequest);   
+    	 for (S3ObjectSummary objectSummary : objList.getObjectSummaries()) 
+    	 {
+         	System.out.println(objectSummary.getKey() + " (size: " + objectSummary.getSize() + ")");
+         }
     }
 
     /**
