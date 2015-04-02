@@ -16,17 +16,25 @@ package awslabs.lab21;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
+import com.amazonaws.services.s3.model.DeleteBucketRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 
 /**
  * Project: Lab2.1
@@ -45,9 +53,12 @@ public class StudentCode extends SolutionCode {
      * @param bucketName The name of the bucket to create.
      */
     @Override
-    public void createBucket(AmazonS3 s3Client, String bucketName, Region region) {
+    public void createBucket(AmazonS3 s3Client, String bucketName, Region region) 
+    {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.createBucket(s3Client, bucketName, region);
+	//super.createBucket(s3Client, bucketName, region);
+    	s3Client.createBucket(bucketName);
+    	
     }
 
     /**
@@ -60,10 +71,22 @@ public class StudentCode extends SolutionCode {
      * @param objectKey  The key to assign to the new S3 object.
      */
     @Override
-    public void putObject(AmazonS3 s3Client, String bucketName, String sourceFile, String objectKey) {
+    public void putObject(AmazonS3 s3Client, String bucketName, String sourceFile, String objectKey) 
+    {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.putObject(s3Client, bucketName, sourceFile, objectKey);
+	 // super.putObject(s3Client, bucketName, sourceFile, objectKey);
+    	File myfile = new File(sourceFile);
+    	PutObjectRequest myrequest = new PutObjectRequest(bucketName, objectKey, myfile);
+    	PutObjectResult myresult = s3Client.putObject(myrequest);
     }
+    public void listAllBuckets(AmazonS3 s3Client)
+    {
+    	for (Bucket bucket:s3Client.listBuckets())	
+   	    { 
+   		 System.out.println(bucket.getName());
+   	    }
+    }
+    
 
     /**
      * List the contents of the specified bucket by writing the object key and item size to the console.
@@ -73,9 +96,12 @@ public class StudentCode extends SolutionCode {
      * @param bucketName The name of the bucket containing the objects to list.
      */
     @Override
-    public void listObjects(AmazonS3 s3Client, String bucketName) {
+    public void listObjects(AmazonS3 s3Client, String bucketName) 
+    {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.listObjects(s3Client, bucketName);
+	//super.listObjects(s3Client, bucketName);    	  	
+    	ListObjectsRequest myrequest =	new	ListObjectsRequest().withBucketName (bucketName);
+    	ObjectListing objList =	s3Client.listObjects(myrequest);   
     }
 
     /**
@@ -90,7 +116,8 @@ public class StudentCode extends SolutionCode {
     @Override
     public void makeObjectPublic(AmazonS3 s3Client, String bucketName, String key) {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.makeObjectPublic(s3Client, bucketName, key);
+	//super.makeObjectPublic(s3Client, bucketName, key);
+    	s3Client.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
     }
 
     /**
@@ -106,7 +133,11 @@ public class StudentCode extends SolutionCode {
     @Override
     public String generatePreSignedUrl(AmazonS3 s3Client, String bucketName, String key) {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	return super.generatePreSignedUrl(s3Client, bucketName, key);
+	//return super.generatePreSignedUrl(s3Client, bucketName, key);
+    	Date mydate = new Date (System.currentTimeMillis() + 3600000L);
+    	URL mypresignedURL = null;
+    	mypresignedURL = s3Client.generatePresignedUrl(bucketName, key, mydate);
+    	return mypresignedURL.toString();
     }
 
     /**
@@ -124,6 +155,37 @@ public class StudentCode extends SolutionCode {
     @Override
     public void deleteBucket(AmazonS3 s3Client, String bucketName) {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.deleteBucket(s3Client, bucketName);
+	//super.deleteBucket(s3Client, bucketName);
+    	// totally copied this code!!! 
+    	// First, try to delete the bucket.
+    	DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest(bucketName);
+    	
+    	try {
+    	    s3Client.deleteBucket(deleteBucketRequest);
+    	    // If we got here, no error was generated so we'll assume the bucket was deleted and return.
+    	    return;
+    	}
+    	catch (AmazonS3Exception ex) {
+    		if (!ex.getErrorCode().equals("BucketNotEmpty")) {
+    			// The only other exception we're going to handle is BucketNotEmpty, so rethrow anything else.
+    			throw ex; 
+    	    }
+    	}
+    	// If we got here, the bucket isn't empty, so delete the contents and try again.
+    	List<KeyVersion> keys = new ArrayList<KeyVersion>();
+    	for (S3ObjectSummary obj : s3Client.listObjects(bucketName).getObjectSummaries()) {
+    	    // Add the keys to our list of object.
+    	    keys.add(new KeyVersion(obj.getKey()));
+    	}
+ 
+    	// Create the request to delete the objects.
+    	DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName);
+    	deleteObjectsRequest.withKeys(keys);
+    	// Submit the delete objects request.
+    	s3Client.deleteObjects(deleteObjectsRequest);
+    	
+    	// The bucket is empty now, so attempt the delete again.
+    	s3Client.deleteBucket(deleteBucketRequest);    	
+    
     }
 }
