@@ -12,7 +12,13 @@
  */
 package awslabs.lab22;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
@@ -40,7 +46,30 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public void createAccountItem(AmazonDynamoDBClient ddbClient, String tableName, Account account) {
 		// TODO: Replace this call to the super class with your own implementation of the method.
-		super.createAccountItem(ddbClient, tableName, account);
+		//super.createAccountItem(ddbClient, tableName, account);
+	/*	account.getAge();
+		account.getCompany();
+		account.getEmail();
+		account.getFirst();
+		account.getLast();*/
+				
+		Map<String, AttributeValue>	item = new HashMap<String, AttributeValue>();
+		item.put("Company", new AttributeValue().withS(account.getCompany()));
+		item.put("Email", new AttributeValue().withS(account.getEmail()));
+		if (!account.getAge().equals(""))
+		{
+		   item.put("First", new AttributeValue().withS(account.getFirst()));
+		}
+		if (!account.getLast().equals(""))
+		{
+		  item.put("Last", new AttributeValue().withS(account.getLast()));
+		}
+		if (!account.getAge().equals(""))
+		{
+		  item.put("Age", new AttributeValue().withN(account.getAge()));
+		}
+		PutItemRequest request = new PutItemRequest(tableName, item);
+		PutItemResult result =	ddbClient.putItem(request);		
 	}
 
 	/**
