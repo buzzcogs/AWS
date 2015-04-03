@@ -45,10 +45,9 @@ public class Lab22 {
 	 * Controls the flow of the lab code execution.
 	 */
 	public static void main(String[] args) {
-		AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
 		try {
 			// Create DynamoDB client and set the region to US East (Virginia)
-			//AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
+			AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
 			ddbClient.setRegion(region);
 
 			List<Account> accounts = new ArrayList<Account>();
@@ -71,9 +70,7 @@ public class Lab22 {
 
 			System.out.println("Adding items to table.");
 			// Create the accounts
-			for (Account account : accounts) 
-			{
-				System.out.println("About to add item: " + account.getCompany() + "/" + account.getEmail());
+			for (Account account : accounts) {
 				labCode.createAccountItem(ddbClient, tableName, account);
 				System.out.println("Added item: " + account.getCompany() + "/" + account.getEmail());
 			}
@@ -102,12 +99,8 @@ public class Lab22 {
 			System.out.print("Attempting update. ");
 			labCode.updateIfMatch(ddbClient, tableName, "jimjohnson@amazon.com", "Amazon.com", "James", "Jim");
 			System.out.println("Done.");
-			//optionalLabCode.deleteTable(ddbClient, tableName);
 		} catch (Exception ex) {
 			LabUtility.dumpError(ex);
-			//optionalLabCode.deleteTable(ddbClient, tableName);
-		} finally {
-			//optionalLabCode.deleteTable(ddbClient, tableName);
 		}
 	}
 

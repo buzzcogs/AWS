@@ -12,13 +12,7 @@
  */
 package awslabs.lab22;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
@@ -47,6 +41,7 @@ public class StudentCode extends SolutionCode {
 	public void createAccountItem(AmazonDynamoDBClient ddbClient, String tableName, Account account) {
 		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.createAccountItem(ddbClient, tableName, account);
+<<<<<<< HEAD
 	/*	account.getAge();
 		account.getCompany();
 		account.getEmail();
@@ -71,6 +66,8 @@ public class StudentCode extends SolutionCode {
 		//PutItemRequest request = new PutItemRequest(tableName, item);
 		PutItemRequest request = new PutItemRequest().withTableName(tableName).withItem(item);
 		PutItemResult result =	ddbClient.putItem(request);	*/	
+=======
+>>>>>>> parent of 59a2fef... my messed up changes
 	}
 
 	/**
