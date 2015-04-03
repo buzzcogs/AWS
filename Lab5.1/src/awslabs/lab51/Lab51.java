@@ -89,8 +89,8 @@ public class Lab51 {
 		
 
 		if (System.getProperty("REGION") == null || System.getProperty("REGION").isEmpty()) {
-			logMessageToPage("REGION wasn't defined. Using default value 'us-east-1'");
-			System.setProperty("REGION", "us-east-1");
+			logMessageToPage("REGION wasn't defined. Using default value 'us-west-2'");
+			System.setProperty("REGION", "us-west-2");
 		}
 
 		if (System.getProperty("PARAM3") == null || System.getProperty("PARAM3").isEmpty()) {
@@ -318,7 +318,7 @@ public class Lab51 {
 			if (images != null) {
 				labCode.addItemsToPage(s3Client, images);
 			} else {
-				logMessageToPage("List of images came back from DynamoDB empty.");
+				logMessageToPage("Hello. Let's list of images came back from DynamoDB empty.");
 			}
 		} else {
 			logMessageToPage("Skipped building image list because no credentials were found.");

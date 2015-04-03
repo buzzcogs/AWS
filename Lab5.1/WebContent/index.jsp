@@ -39,8 +39,8 @@
 	
     <table class="90percent">
         <tr>
-            <td><h2>Configuration Parameters:</h2></td>
-            <td><h2>Host Environment:</h2></td>
+            <td><h2>My Configuration Parameters:</h2></td>
+            <td><h2>My Host Environment:</h2></td>
         </tr>
         <tr>
  
