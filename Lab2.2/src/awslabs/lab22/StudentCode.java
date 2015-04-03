@@ -40,15 +40,19 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public void createAccountItem(AmazonDynamoDBClient ddbClient, String tableName, Account account) {
 		// TODO: Replace this call to the super class with your own implementation of the method.
+<<<<<<< HEAD
 		super.createAccountItem(ddbClient, tableName, account);
 <<<<<<< HEAD
+=======
+		//super.createAccountItem(ddbClient, tableName, account);
+>>>>>>> parent of 39cb220... still working on lab 3. I'll see if git works and I can pull this stuff
 	/*	account.getAge();
 		account.getCompany();
 		account.getEmail();
 		account.getFirst();
 		account.getLast();*/
 				
-	/*	Map<String, AttributeValue>	item = new HashMap<String, AttributeValue>();
+		Map<String, AttributeValue>	item = new HashMap<String, AttributeValue>();
 		item.put("Company", new AttributeValue().withS(account.getCompany()));
 		item.put("Email", new AttributeValue().withS(account.getEmail()));
 		if (!account.getAge().equals(""))
@@ -63,11 +67,16 @@ public class StudentCode extends SolutionCode {
 		{
 		  item.put("Age", new AttributeValue().withN(account.getAge()));
 		}
+<<<<<<< HEAD
 		//PutItemRequest request = new PutItemRequest(tableName, item);
 		PutItemRequest request = new PutItemRequest().withTableName(tableName).withItem(item);
 		PutItemResult result =	ddbClient.putItem(request);	*/	
 =======
 >>>>>>> parent of 59a2fef... my messed up changes
+=======
+		PutItemRequest request = new PutItemRequest(tableName, item);
+		PutItemResult result =	ddbClient.putItem(request);		
+>>>>>>> parent of 39cb220... still working on lab 3. I'll see if git works and I can pull this stuff
 	}
 
 	/**
