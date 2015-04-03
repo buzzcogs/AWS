@@ -44,7 +44,7 @@ import com.amazonaws.services.securitytoken.model.Credentials;
 public class Lab41 {
 
 	// TODO: Select the region containing the table that you are using.
-	private static Region region = Region.getRegion(Regions.US_EAST_1);
+	private static Region region = Region.getRegion(Regions.US_WEST_2);
 
 	// BEGIN NON-STUDENT CODE
 	private static ILabCode labCode = new StudentCode();
